@@ -1,32 +1,32 @@
 import json
 import pathlib
- 
+
 import airflow
 import requests
 import requests.exceptions as requests_exceptions
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
- 
+
 
 def my_func(p1, p2):
     return f"p1 -> {p1}, p2 -> {p2}"
 
-dag = DAG(
-   dag_id="user_defened_function",
-   start_date=airflow.utils.dates.days_ago(14),
-   schedule_interval="@daily",
-   user_defined_macros={'report': my_func}
 
+dag = DAG(
+    dag_id="user_defened_function",
+    start_date=airflow.utils.dates.days_ago(14),
+    schedule_interval="@daily",
+    user_defined_macros={"report": my_func},
 )
- 
+
 download_launches = BashOperator(
-   task_id="download_launches",
-   bash_command="curl -o /tmp/launches.json -L 'https://ll.thespacedevs.com/2.0.0/launch/upcoming'",
-   dag=dag,
+    task_id="download_launches",
+    bash_command="curl -o /tmp/launches.json -L 'https://ll.thespacedevs.com/2.0.0/launch/upcoming'",
+    dag=dag,
 )
- 
- 
+
+
 # def _get_pictures():
 #    # Ensure directory exists
 #    pathlib.Path("/tmp/images").mkdir(parents=True, exist_ok=True)
@@ -54,7 +54,7 @@ download_launches = BashOperator(
 #    python_callable=_get_pictures,
 #    dag=dag,
 # )
- 
+
 # notify = BashOperator(
 #    task_id="notify",
 #    bash_command='echo "There are now $(ls /tmp/images/ | wc -l) images."',
@@ -62,12 +62,11 @@ download_launches = BashOperator(
 # )
 
 my_function = BashOperator(
-   task_id="my_func",
-   bash_command='echo "{{report(11, 44)}}"',
-   dag=dag,
+    task_id="my_func",
+    bash_command='echo "{{report(11, 44)}}"',
+    dag=dag,
 )
- 
+
 # download_launches >> get_pictures >> my_function >> notify
 
 download_launches >> my_function
-
