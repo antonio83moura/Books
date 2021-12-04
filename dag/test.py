@@ -1,3 +1,4 @@
+
 import json
 import pathlib
 
@@ -30,3 +31,5 @@ my_function = BashOperator(
 # download_launches >> get_pictures >> my_function >> notify
 
 my_function
+
+# test
